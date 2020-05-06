@@ -7,7 +7,7 @@ class bootGame extends Phaser.Scene {
     preload() {
 
         // load all images and sprites
-        this.load.image("daylight", "assets/sky.png");
+        this.load.image("daylight", "assets/sky2.png");
         this.load.image("night", "assets/night.png");
         this.load.image("ground", "assets/platform.png");
         this.load.image("star", "assets/star.png");

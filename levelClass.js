@@ -9,13 +9,14 @@ class level extends Phaser.Scene {
         };
     }
 
-
     create() {
         gameState.active = true;
         gameState.gameOver = false;
         gameState.isOnLadder = false;
         gameState.enemyAlive = false;
         gameState.score = 0;
+        gameState.windowWidth = config.width;
+
 
         // Adding the background 
         gameState.background = this.add.image(0, 0, this.theme).setOrigin(0, 0);
@@ -23,12 +24,14 @@ class level extends Phaser.Scene {
         // Adding the platforms 
         gameState.platforms = this.physics.add.staticGroup();
         gameState.platforms.create(400, 568, "ground").setScale(2).refreshBody();
+        gameState.platforms.create(1199, 568, "ground").setScale(2).refreshBody();
+        gameState.platforms.create(1600, 568, "ground").setScale(2).refreshBody();
         gameState.platforms.create(600, 400, "ground");
         gameState.platforms.create(50, 250, "ground");
         gameState.platforms.create(750, 220, "ground");
 
         // Adding the door 
-        gameState.door = this.physics.add.sprite(750, 155, "door");
+        gameState.door = this.physics.add.sprite(gameState.width * 0.98, 155, "door");
         gameState.door.body.setSize(gameState.door.width, gameState.door.height, true);
 
         // Adding the ladder
@@ -40,8 +43,13 @@ class level extends Phaser.Scene {
 
         // Adding the player 
         gameState.player = new Player(this, 700, 504).setScale(1.5)
-        
 
+        // Adding a camera to follow player
+        gameState.camera = this.cameras.main
+        gameState.camera.setBounds(0, 0, gameState.width, gameState.height);
+        this.physics.world.setBounds(0, 0, gameState.width, gameState.height);
+        gameState.camera.startFollow(gameState.player, true, 1, 1);
+        
         // Adding three lives 
         gameState.lives = this.add.group()
         gameState.player.create();
@@ -63,6 +71,7 @@ class level extends Phaser.Scene {
 
         // Adding the bullets group
         gameState.bullets = this.add.group();
+         
 
         // Adding the enemies group
         gameState.enemies = this.physics.add.group();
@@ -76,6 +85,8 @@ class level extends Phaser.Scene {
             fontSize: "32px",
             fill: "#000",
         });
+
+        gameState.scoreText.setScrollFactor(0);
 
         // Adding colliders and overlaps
         this.physics.add.collider(gameState.player, gameState.platforms, function () {
@@ -273,7 +284,7 @@ class level extends Phaser.Scene {
         }
 
         // Disable/enable gun 
-        if (Phaser.Input.Keyboard.JustDown(gameState.cKey) && gameState.hasGun) {
+        if (Phaser.Input.Keyboard.JustDown(gameState.cKey) && gameState.hasGun == true) {
             gameState.hasGunInPocket = true;
             gameState.hasGun = false;
             gameState.gun.disableBody(true, true);
@@ -281,12 +292,17 @@ class level extends Phaser.Scene {
         } else if (
             Phaser.Input.Keyboard.JustDown(gameState.vKey) && gameState.hasGunInPocket == true) {
             gameState.hasGun = true;
-            gameState.gun.enableBody(true, gameState.player.x + 16, gameState.player.y + 16, true, true);
+            if (gameState.isLookingLeft) {
+                gameState.gun.enableBody(true, gameState.player.x - 16, gameState.player.y + 16, true, true);
+            } else if (gameState.isLookingRight) {
+                gameState.gun.enableBody(true, gameState.player.x + 16, gameState.player.y + 16, true, true);
+            }
         }
 
         // Friendly bullet
         if (Phaser.Input.Keyboard.JustDown(gameState.spacebar) && gameState.hasGun == true) {
             var beam = new Beam(this);
+            
 
             if (gameState.cursors.left.isDown || gameState.isLookingLeft == true) {
                 beam.angle += 270;
@@ -312,9 +328,9 @@ class level extends Phaser.Scene {
 
         // Restart level 
         if (gameState.isOnDoor == true) {
-            gameState.door.anims.play("open");
 
             if (gameState.score >= 150) {
+                gameState.door.anims.play("open");
                 this.time.addEvent({
                     delay: 1000,
                     callback: restart,
@@ -362,5 +378,12 @@ class level extends Phaser.Scene {
             this.scene.start("gameOverScene");
         }
     }
+
+    render(){
+        game.debug.image("lives", 800, 32)
+    }
 }
-const gameState = {}
+const gameState = {
+    width: 2000,
+    height: 600
+}

@@ -1,9 +1,6 @@
 class Beam extends Phaser.GameObjects.Sprite {
     constructor(scene) {
 
-        // var x = scene.gun.x + 10;
-        // var y = scene.gun.y - 4;
-
         if(gameState.isLookingRight){ 
             var x = gameState.gun.x + 10;   
             var y = gameState.gun.y - 4;     
@@ -17,11 +14,13 @@ class Beam extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
         this.play("shoot");        
         scene.physics.world.enableBody(this)
-        this.body.allowGravity = false;  
+        this.body.allowGravity = false;
+        // this.setScrollFactor(0) 
     }
 
     update() {
-        if (this.x > 784 || this.x < 16) {
+        
+        if (this.x > gameState.camera.displayWidth - 16 || this.x < gameState.camera.displayWidth - 784) {
             this.destroy();
         }
 

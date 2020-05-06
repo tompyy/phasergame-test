@@ -8,9 +8,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);
 
         // start position of lives
-        gameState.lifeX = 800;
+        gameState.lifeX = config.width;
         gameState.lifeY = 32;
-
+        
         // adjusting collision boundaries after 1 second
         scene.time.addEvent({
             delay: 1000,
@@ -30,6 +30,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 gameState.lifeX - 100 + 30 * i,
                 gameState.lifeY,
                 "lives").setScale(2.5);
+            gameState.life.setScrollFactor(0)
         };
     }
 
@@ -84,7 +85,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         // Climbing ladder 
         if (gameState.isOnLadder == true) {
-            gameState.isOnPlatform = false
+            if (gameState.hasGun == true){
+                gameState.gun.visible = false;
+                gameState.spacebar.enabled = false;
+            }
+
+            gameState.isOnPlatform = false;
 
             if (gameState.cursors.up.isDown) {
                 gameState.player.body.velocity.y = -160;
@@ -98,7 +104,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }
         } else if (gameState.cursors.up.isDown && gameState.isOnPlatform == true && gameState.player.body.touching.down && gameState.isOnLadder == false) {
             gameState.player.setVelocityY(-330);
-            gameState.isOnPlatform = false
+            gameState.isOnPlatform = false;
+        }
+
+        if (gameState.isOnLadder == false && gameState.hasGun == true) {
+            gameState.gun.visible = true;
+            gameState.spacebar.enabled = true;
         }
 
         gameState.isOnLadder = false;
@@ -109,4 +120,3 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     }
 }
-
