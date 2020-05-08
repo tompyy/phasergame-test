@@ -16,7 +16,7 @@ class gameOverScene extends Phaser.Scene {
 
         this.input.on("pointerdown", () => {
             this.scene.stop("gameOverScene")
-            this.scene.start("Level1")
+            this.scene.start("level1")
             this.anims.resumeAll();
         })
 

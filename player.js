@@ -1,11 +1,23 @@
-class Player extends Phaser.Physics.Arcade.Sprite {
+class player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
 
         super(scene, x, y, "dude");
+        gameState.isLookingLeft = false;
+        gameState.isLookingRight = true;
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.setBounce(0.2);
         this.setCollideWorldBounds(true);
+
+        scene.physics.add.collider(this, gameState.platforms, function () {
+            gameState.isOnPlatform = true;
+        }, null, scene);
+        scene.physics.add.overlap(this, gameState.ladders, function() {
+            gameState.isOnLadder = true;
+        }, null, scene);
+        scene.physics.add.overlap(this, gameState.door, function () {
+            gameState.isOnDoor = true;
+        }, null, scene);
 
         // start position of lives
         gameState.lifeX = config.width;
@@ -117,6 +129,5 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if (gameState.lives.countActive() < 1) {
             gameState.gameOver = true;
         }
-
     }
 }

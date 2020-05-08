@@ -9,10 +9,15 @@ class enemyBomb extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);        
         scene.physics.world.enableBody(this)
         this.body.allowGravity = false;  
+
+        scene.physics.add.collider(gameState.enemyBombs, gameState.platforms, function (bomb, target) {
+            bomb.destroy();
+            var explosion = new Explosion(scene, bomb.x, bomb.y).setScale(2);
+        }, null, scene);
     }
 
     update() {
-        if (this.x > 780 || this.x < 20) {
+        if (this.x > (gameState.width - 16) || this.x < 16) {
             this.destroy();
         } 
     
